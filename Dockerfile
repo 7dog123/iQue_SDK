@@ -1,6 +1,8 @@
 FROM ubuntu:focal
 
-RUN apt-get update && \
+RUN apt-get update
+
+RUN DEBIAN_FRONTEND=noninteractive TZ=US/Central \
     apt-get -y install rpm git make \
     linux-headers-5.4.0-77-generic
 
