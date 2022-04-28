@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 
-RUN apt-get -y install rpm 
+RUN apt-get update && \
+    apt-get -y install rpm 
 
 WORKDIR /usr/local/src
 
