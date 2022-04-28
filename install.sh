@@ -18,7 +18,7 @@ if id | grep "^uid=0(root)" > /dev/null; then
         apt-get -y install libelf-dev
 	mkdir -p /usr/mips-linux/bin
         cp as /usr/mips-linux/bin
-        cp as /usr/bin/mips-linux-as
+        #cp as /usr/bin/mips-linux-as
 	#
 	# Copy to devkit to the real install location, unless we're there already
 	#
@@ -34,7 +34,7 @@ if id | grep "^uid=0(root)" > /dev/null; then
 	else
 		echo skip copy to $DEST, not needed
 	fi
-	make -C modules install
+	make CC=mips-linux-gnu-gcc-10 -C modules install
 	echo root installation complete, each developer must also run this script individually
 	exit 0
 fi
