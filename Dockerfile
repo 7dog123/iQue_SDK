@@ -1,7 +1,8 @@
-FROM ubuntu:latest
+FROM ubuntu:focal
 
 RUN apt-get update && \
-    apt-get -y install rpm git make linux-headers-generic
+    apt-get -y install rpm git make \
+    linux-headers-5.4.0-77-generic
 
 WORKDIR /usr/local/src
 
