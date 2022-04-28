@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>iQue Player SDK</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h2 align="center">Software Development Kit for iQue Player (version
+1.5)<br>
+</h2>
+<div align="center">$Revision: 1.14 $<br>
+$Date: 2004/12/01 22:08:22 $<br>
+</div>
+<br>
+<h3>Purpose</h3>
+The iQue Software Development Kit provides all the tools and
+libraries necessary to develop applications that will run on the
+iQue Player. &nbsp;The SDK includes an iQue Player with a special
+software
+environment that allows the testing of locally developed games.<br>
+<h3>Development System Requirements</h3>
+<ul>
+  <li>A PC with at least 256MB of RAM, 200MB of free disk space and a
+CDROM drive</li>
+  <li>At least one USB port and a USB cable with Cat-A and 5-pin Mini-B
+connectors.<br>
+  </li>
+  <li>RedHat Linux version 8.0 or 9 with at least the following
+packages installed:</li>
+  <ul>
+    <li>Kernel source (required to build the SDK USB driver loadable
+module)</li>
+    <li>GCC and ELF tools</li>
+    <li>Perl<br>
+    </li>
+  </ul>
+</ul>
+<h3>Installation Instructions</h3>
+The SDK includes the following items:<br>
+<ul>
+  <li>cross compiler suite for building MIPS binaries for the iQue
+Player</li>
+  <li>libraries, including graphics and audio support for the iQue
+Player</li>
+  <li>header files required to build iQue games</li>
+  <li>iQue tools for creating game executables<br>
+  </li>
+  <ul>
+  </ul>
+  <li>source for the linux driver required to connect to the iQue
+Player using USB<br>
+  </li>
+  <li>online documentation</li>
+  <li>sample source code for iQue Player applications<br>
+  </li>
+</ul>
+In order to install the SDK, please use the following procedures:<br>
+<ul>
+  <li>Place the SDK cdrom in the cdrom drive of the linux development
+host. &nbsp;If the CD is not automatically mounted, then issue the
+following commands to make it accessible (note that these commands
+require <b>root</b> privilege and that the directory <i>/mnt/cdrom</i>
+may need to be created first):</li>
+  <ul>
+    <li>su</li>
+    <li>mkdir -p /mnt/cdrom (not required if the directory already
+exists)<br>
+    </li>
+    <li>mount /dev/cdrom /mnt/cdrom</li>
+  </ul>
+  <li>Once the SDK cdrom is mounted, execute the following commands as <b>root</b>:<br>
+  </li>
+  <ul>
+    <li>cd /mnt/cdrom</li>
+    <li>./install.sh<br>
+    </li>
+  </ul>
+  <ul>
+  </ul>
+  <li>Each developer on the system must install the non-shared portions
+of the SDK relative to their home directory based on the setting of
+$ROOT:</li>
+  <ul>
+    <li>login as user</li>
+    <li>mkdir $HOME/ique_root (note that this directory name is just an
+example)</li>
+    <li>ROOT=$HOME/ique_root; export ROOT</li>
+    <li>/opt/ique/sdk/install.sh</li>
+  </ul>
+</ul>
+<h3>Building Applications</h3>
+In order to use the SDK to create applications, each developer on the
+linux host will need to install the user-specific portions of
+the SDK as described above. &nbsp;In addition to setting the $ROOT
+environment variable, please also add the following directory to the
+$PATH environment variable used by the linux shell:<br>
+<ul>
+  <li>$ROOT/usr/sbin</li>
+</ul>
+For example, a <i>bash</i> user would add the following command to
+their <i>$HOME/.bash_profile</i> script:<br>
+<ul>
+  <li>PATH=$PATH:$ROOT/usr/sbin</li>
+  <li>export PATH</li>
+</ul>
+For examples of how to build a game executable, refer to the make
+command file (GNUmakefile) for the demo applications included with the
+SDK. &nbsp;Note that there are several additional steps after the
+invocation of makerom:<br>
+<ul>
+  <li>makerom -r game.rom spec</li>
+  <li>rommd -c 4 game.rom</li>
+  <li>aesrom game.rom game.aes</li>
+</ul>
+The <i>rommd</i> command above specifies that the game supports up to
+4 emulated "Controller Paks" for storing game state (refer to the
+discussion of persistent game state below). &nbsp;The <i>aesrom</i>
+command encrypts the resulting game rom, so that it can be launched
+using the SDK game launcher (called<i> devmon</i>). &nbsp;Once the game
+file has been encrypted, use <i>devmon</i> and <i>devsh</i> to copy
+the new game to the cartridge:<br>
+<ul>
+  <li>Connect the special SDK iQue Player to the linux host
+using the Cat-A to Mini-B (5 pin) USB cable</li>
+  <li>Boot the iQue Player, which brings up <i>devmon </i>and shows a
+list of the files on the current cartridge</li>
+  <li>On the linux host, start "<i>$ROOT/usr/sbin/mux</i>" in a
+separate terminal window</li>
+  <li>Then invoke "<i>devsh</i>" in the directory containing the game
+rom file. &nbsp;The following <i>devsh</i> commands delete a
+pre-existing version of the game binary and replace it with the newly
+created one:</li>
+  <ul>
+    <li>d game.aes</li>
+    <li>a game.aes</li>
+  </ul>
+</ul>
+The game should appear on the list of available files shown
+by <i>devmon.</i> &nbsp;The game can be invoked by selecting the
+appropriate entry, using the D pad on the player, and then pushing the
+A button to launch the game.<br>
+<h3>Debugging Applications</h3>
+There are two primary ways to debug applications using the SDK:
+&nbsp;add <i>osSyncPrintf</i> calls to the source code or use the GNU
+Debugger (<i>gdb</i>) for source level debugging. &nbsp;The library
+call <i>osSyncPrintf</i> allows the program to send formatted messages
+over the USB cable to be
+printed in a window on the linux host. &nbsp;In order to see the
+output, please keep a separate terminal window open in which the
+program <i>$ROOT/usr/sbin/mux</i> is running. &nbsp;The print messages
+from the calls to <i>osSyncPrintf</i> will appear in the window
+running <i>mux</i>.<br>
+<br>
+For information about using <i>gdb</i> to debug iQue Player
+Applications, please follow this link:<br>
+<br>
+<a href="file:///opt/ique/sdk/doc/gdb.html">file:///opt/ique/sdk/doc/gdb.html</a><br>
+<h3>Documentation</h3>
+Detailed documentation on writing programs for the iQue Player,
+including descriptions of details of all the library routines which are
+available to the programmer, can be found by following the included
+link, using a web browser:<br>
+<br>
+<a href="file:///opt/ique/sdk/doc/N64OnlineManuals52/index.htm">file:///opt/ique/sdk/doc/N64OnlineManuals52/index.htm</a><br>
+<br>
+Note that the documentation provided is directly from the Nintendo 64
+SDK. &nbsp;Not all features of the N64 system are supported on the
+iQue player. &nbsp;See the next section for details.<br>
+<h3>Differences Between Nintendo64 and the&nbsp; iQue Player</h3>
+The following N64 features are not supported on the iQue Player:<br>
+<ul>
+  <li>Rumble pack</li>
+  <li>N64 disk drive (64DD)</li>
+  <li>No PIF<br>
+  </li>
+  <li>EEPROM, Controller Pak, SRAM and Flash ROM are not directly
+supported, but can be emulated as described below</li>
+  <li>The cpu on the iQue Player runs at 1.5x the clock rate of the cpu
+on N64. &nbsp;If a programmer uses the mfc0 instruction to access the
+COUNT and COMPARE registers of the cpu as an absolute time reference,
+the results will be different on the iQue Player. &nbsp;The values
+returned by the <i>osGetCount()</i> and <i>osSetCompare()</i> calls
+have been scaled on the iQue Player in such a way that a program
+written for N64 will get the same absolute time behavior on the iQue
+Player.</li>
+  <li>The access time of the flash cartridge on the iQue Player is
+faster than that of the N64 maskrom when accesses are done in large
+chunks (16KB). &nbsp;On the iQue Player there is a significant penalty
+for accessing the flash using PIOs to read small chunks randomly.
+&nbsp;For best performance, the game should be designed to access the
+flash using large sequential reads.<br>
+  </li>
+</ul>
+<i><b>Persistent Game State on the iQue Player</b></i><br>
+<br>
+The N64 system provides 4 different hardware backup devices for storing
+persistent game state: Controller Pak, EEPROM, SRAM, and Flash
+ROM.&nbsp; These devices exist either in the N64 controller or in a
+particular game's cartridge.&nbsp; The iQue Player system does not
+provide such hardware, but provides emulation of each type of backup
+device using a combination of DRAM and the iQue Flash Cartridge.<br>
+<br>
+When a game is initially launched on the iQue Player, the persistent
+game state is loaded from the flash cartridge into a known location
+in the upper 4MB of<br>
+DRAM.&nbsp; All state reading and writing operations have been
+modified to access this DRAM memory instead of an actual device.&nbsp;
+When the game is exited (by pressing the power button), the state in
+DRAM
+is then copied back out to the flash cartridge.<br>
+<br>
+The game launching program examines a game's "metadata" to determine
+what type of persistent state, if any, is used and where in DRAM it
+will be located. &nbsp;After building a ROM image (and before
+encrypting
+it), the developer can attach "metadata" to the image using the <i>$ROOT/usr/sbin/rommd</i>
+program:<br>
+<ul>
+  <li>rommd [options] romfile</li>
+</ul>
+The options specify what type of state saving mechanism is to be
+emulated:<br>
+<ul>
+  <li>-e &lt;n&gt;&nbsp; This ROM has 'n' Kb EEPROM (valid values for n
+are 0, 4, or 16)</li>
+  <li>-f &lt;n&gt;&nbsp; This ROM has 'n' Kb Flash (valid values for n
+are 0 or 1024)</li>
+  <li>-s &lt;n&gt;&nbsp; This ROM has 'n' Kb SRAM (valid values for n
+are 0 or 256)</li>
+  <li>-c &lt;n&gt;&nbsp; This ROM supports up to 'n' 32KB controller
+paks (n is between 0-4)</li>
+  <li>-u &lt;n&gt;&nbsp; This ROM supports up to 'n' 16KB or 32KB
+auxiliary data (.u0x) files (n is between 0-4)</li>
+</ul>
+If the <i>rommd</i> program is run without options, it displays the
+existing "metadata" attached to the specified rom file.<br>
+<h3>Potential Problems and Solutions</h3>
+Perl scripts that process UTF-8 characters fail with error messages
+like:<br>
+<ul>
+  <li>Malformed UTF-8 character (unexpected end of string) at
+i10n/tools/zh/zh_genmap16.pl line 13.</li>
+  <li>Malformed UTF-8 character (2 bytes, need 1, after start byte
+0xc0) in vec at i10n/tools/zh/zh_kanji.pl line 155.</li>
+</ul>
+The standard internationalization configuration file <i>/etc/sysconfig/i18n</i>
+that is provided with RedHat causes the Perl character handling
+routines to fail. &nbsp;A version of this configuration file is
+supplied with
+the SDK that provides a "workaround" for this problem. &nbsp;To install
+the new version, login as <b>root</b> and use the following steps:<br>
+<ul>
+  <li>cd /etc/sysconfig</li>
+  <li>mv i18n i18n.redhat</li>
+  <li>cp /opt/ique/sdk/doc/i18n ./i18n<br>
+  </li>
+</ul>
+<h3>Changes from SDK v1.0 to v1.1</h3>
+The following bugs were fixed between versions 1.0 and 1.1:<br>
+<ul>
+  <li>On version 1.0, devmon would frequently fail to launch games.
+&nbsp;This has been fixed.</li>
+  <li>Return a proper flash ID from osFlashReadID (for Majora's
+Mask).</li>
+  <li>Fix to allow 8MB games to work (for Majora's Mask).</li>
+</ul>
+<h3>Changes from SDK v1.1 to v1.2</h3>
+The following features were added between versions 1.1 and 1.2:<br>
+<ul>
+  <li>A source level debugger based on the GNU Debugger<i> (gdb</i>),
+including support for a GUI interface to <i>gdb.</i></li>
+  <li>The libultra primitive for reading the Real-Time Clock is now
+exported (<i>osBbRtcGet</i>)<br>
+  </li>
+</ul>
+The following bugs were fixed between versions 1.1 and 1.2:<br>
+<ul>
+  <li>Fix <i>osFlashReadArray</i> to send a message to the supplied
+message queue even if the passed parameters are not valid.</li>
+  <li>The installation script for the SDK would fail to install the
+correct symlink in $ROOT/doc for the index.html file if an old version
+of the SDK had already been installed by the user.</li>
+</ul>
+<h3>Changes from SDK v1.2 to v1.3</h3>
+The following features were added between versions 1.2 and 1.3:<br>
+<ul>
+  <li>The <i>Auxiliary Data</i> API was added to allow a game to
+create state files in the file system of the cartridge. &nbsp;The
+motivation for this API is to allow the travelling data in Animal
+Forest to be handled
+cleanly within the game itself. &nbsp;For documentation on this new
+API,
+please refer to the following link:</li>
+  <ul>
+    <li><a href="file:///opt/ique/sdk/doc/auxdata.html">file:///opt/ique/sdk/doc/auxdata.html</a><br>
+    </li>
+  </ul>
+</ul>
+<h3>Changes from SDK v1.3 to v1.4</h3>
+The following features were added between versions 1.3 and 1.4:<br>
+<ul>
+  <li>The <i>rommd</i> utility was updated with the "-u" option to
+specify
+the number of auxiliary files a game can have. This limit is enforced
+when
+saving an auxiliary data file.</li>
+</ul>
+The following bugs were fixed in version 1.4:<br>
+<ul>
+  <li>The <i>Auxiliary Data</i> API routines were modified to allow
+them to work properly in a game that does cartridge (PI) DMA.
+&nbsp;This change includes the addition of an initialization routine
+that must be called before using the <i>Auxiliary Data </i>API (<i>osBbAuxDataInit</i>).
+&nbsp;Please
+refer to the <i>Auxiliary Data</i> API documentation for details:</li>
+  <ul>
+    <li><a href="file:///opt/ique/sdk/doc/auxdata.html">file:///opt/ique/sdk/doc/auxdata.html</a></li>
+  </ul>
+  <li><i>osBbAuxDataIds</i> has been enhanced to return an error code
+(instead
+of reporting 0) if the cartridge was removed or changed.</li>
+</ul>
+<h3>Changes from SDK v1.4 to v1.5</h3>
+The following changes were made between versions 1.4 and 1.5:<br>
+<ul>
+  <li>The <span style="font-style: italic;">osBbAuxDataInit</span>
+call was changed to take the buffer used by the underlying file system
+calls as a parameter.&nbsp; This allows the game developers to control
+the location of the required 32KB buffer.&nbsp; Please
+refer to the <i>Auxiliary Data</i> API documentation for details:</li>
+  <ul>
+    <li><a href="../../../../../../../../opt/ique/sdk/doc/auxdata.html">file:///opt/ique/sdk/doc/auxdata.html</a></li>
+  </ul>
+</ul>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>
