@@ -12,10 +12,10 @@ DESTLINK=/opt/ique/sdk
 if id | grep "^uid=0(root)" > /dev/null; then
 	echo starting root installation of iQue SDK
 	echo installing compilation tools
-        rpm -Uhv --replacepkgs --force binutils-mips-linux-2.9.5-3.i386.rpm
-        rpm -Uhv --replacepkgs --force egcs-mips-linux-1.1.2-4.i386.rpm
-        rpm -Uhv --replacepkgs --force libelf-0.8.2-2.i386.rpm
-        rpm -Uhv --replacepkgs --force libelf-devel-0.8.2-2.i386.rpm
+        apt-get -y install binutils-mips-linux-gnu
+        apt-get -y install gcc-10-mips-linux-gnu
+        apt-get -y install libelf1
+        apt-get -y install libelf-dev
 	mkdir -p /usr/mips-linux/bin
         cp as /usr/mips-linux/bin
         cp as /usr/bin/mips-linux-as
