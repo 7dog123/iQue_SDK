@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get -y install rpm 
+    apt-get -y install rpm git make
 
 WORKDIR /usr/local/src
 
