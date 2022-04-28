@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 RUN apt-get update && \
-    apt-get -y install rpm git make
+    apt-get -y install rpm git make linux-headers-generic
 
 WORKDIR /usr/local/src
 
