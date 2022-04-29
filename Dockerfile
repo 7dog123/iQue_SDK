@@ -4,7 +4,7 @@ RUN apt-get update
 
 RUN DEBIAN_FRONTEND=noninteractive TZ=US/Central \
     apt-get -y install rpm git make \
-    linux-headers-5.4.0-77-generic
+    linux-headers-generic
 
 WORKDIR /usr/local/src
 
