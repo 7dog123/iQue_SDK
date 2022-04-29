@@ -34,7 +34,7 @@ if id | grep "^uid=0(root)" > /dev/null; then
 	else
 		echo skip copy to $DEST, not needed
 	fi
-	make CC=mips-linux-gnu-gcc-10 CFLAGS="-I /usr/src/linux-headers-5.13.0-19/include/ -I /usr/src/linux-headers-5.13.0-19/arch/x86/include/" -C modules install
+	make CC=mips-linux-gnu-gcc-10 CFLAGS="-I /usr/src/linux-headers-5.13.0-19/include/ -I /usr/src/linux-headers-5.13.0-19/arch/x86/include/ -I /usr/src/linux-headers-5.13.0-19/arch/x86/include/uapi/" -C modules install
 	echo root installation complete, each developer must also run this script individually
 	exit 0
 fi
